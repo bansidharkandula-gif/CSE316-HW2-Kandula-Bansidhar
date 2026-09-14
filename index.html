@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wolfie Lists</title>
+    <meta name="description" content="Wolfie Lists, a to-do list manager built for CSE 316 at Stony Brook University." />
+
+    <!-- a tiny inline favicon so we do not have to ship an image file -->
+    <link rel="icon"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23990000'/%3E%3Ctext x='16' y='24' font-size='22' font-family='Georgia,serif' fill='white' text-anchor='middle'%3EW%3C/text%3E%3C/svg%3E" />
+</head>
+
+<body>
+    <noscript>
+        <p>Wolfie Lists is a JavaScript application. Please enable JavaScript to use it.</p>
+    </noscript>
+
+    <!--
+        COMPARE THIS FILE WITH HW1's index.html, WHICH WAS 294 LINES
+
+        That file held both screens, all three modals, and four <template>
+        elements for the cards. This one holds an empty div.
+
+        Everything that was in there is now JSX, in src/components/. A
+        <template> was the browser's way of describing markup meant to be copied
+        rather than shown, and a component is a better one. It takes arguments,
+        it can be tested on its own, and it cannot get out of step with the data
+        poured into it because there is no pouring step.
+
+        One thing HW1 insisted on is worth restating, because it still holds and
+        the reason has changed. HW1's rule was that user text is set with
+        textContent and never with innerHTML, so that something typed into a
+        description could never become live markup. JSX gives that for free: an
+        expression like {item.description} is escaped, always, and making it
+        unsafe takes a deliberate dangerouslySetInnerHTML that appears nowhere in
+        this project. The rule is the same, the vigilance it used to require is
+        not.
+    -->
+    <div id="root"></div>
+
+    <script type="module" src="/src/main.jsx"></script>
+</body>
+
+</html>

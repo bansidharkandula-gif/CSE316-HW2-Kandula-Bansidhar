@@ -1,0 +1,44 @@
+{
+    "name": "cse316-hw2",
+    "version": "1.0.0",
+    "description": "Wolfie Lists - CSE 316 Homework 2 (starter code). The HW1 application rebuilt in React with functional components, hooks and context, styled with Tailwind.",
+    "author": "CSE 316 - Stony Brook University",
+    "license": "UNLICENSED",
+    "private": true,
+    "type": "module",
+    "engines": {
+        "node": ">=20.19.0"
+    },
+    "scripts": {
+        "start": "vite --port 9000 --strictPort",
+        "dev": "vite --port 9000 --strictPort",
+        "build": "vite build",
+        "preview": "vite preview --port 9000 --strictPort",
+        "test": "vitest run --config tests/vitest.config.js",
+        "test:watch": "vitest --config tests/vitest.config.js",
+        "test:coverage": "vitest run --coverage --config tests/vitest.config.js",
+        "test:e2e": "playwright test --config tests/playwright.config.js",
+        "test:e2e:headed": "playwright test --headed --config tests/playwright.config.js",
+        "test:e2e:debug": "playwright test --ui --config tests/playwright.config.js",
+        "test:e2e:report": "playwright show-report tests/output/playwright-report",
+        "test:all": "npm run test && npm run test:e2e"
+    },
+    "dependencies": {
+        "react": "^19.2.0",
+        "react-dom": "^19.2.0"
+    },
+    "devDependencies": {
+        "@playwright/test": "^1.56.0",
+        "@tailwindcss/vite": "^4.1.14",
+        "@testing-library/dom": "^10.4.1",
+        "@testing-library/jest-dom": "^6.9.1",
+        "@testing-library/react": "^16.3.0",
+        "@testing-library/user-event": "^14.6.1",
+        "@vitejs/plugin-react": "^5.0.4",
+        "@vitest/coverage-v8": "^3.2.4",
+        "jsdom": "^27.0.0",
+        "tailwindcss": "^4.1.14",
+        "vite": "^7.1.9",
+        "vitest": "^3.2.4"
+    }
+}
