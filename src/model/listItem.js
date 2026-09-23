@@ -11,6 +11,18 @@
 import { IdGenerator } from '../common/IdGenerator.js';
 import { DateUtil } from '../common/DateUtil.js';
 
+export const Priority = Object.freeze({
+    HIGH: 'High',
+    MEDIUM: 'Medium',
+    LOW: 'Low'
+});
+
+export const PRIORITY_ORDER = Object.freeze([Priority.HIGH, Priority.MEDIUM, Priority.LOW]);
+export const DEFAULT_PRIORITY = Priority.LOW;
+export function cleanPriority(value) {
+    return PRIORITY_ORDER.includes(value) ? value : DEFAULT_PRIORITY;
+}
+
 /**
  * @param {Object} values any of the item's fields, the rest get defaults
  * @return {Object} a new item
@@ -20,6 +32,9 @@ export function createListItem(values = {}) {
         id: IdGenerator.next('item'),
         description: '',
         dateEntered: DateUtil.today(),
+        priority: DEFAULT_PRIORITY,
+        targetDate: null,
+        completed: false,
         ...values
     };
 }
@@ -53,6 +68,9 @@ export function itemFromJSON(json) {
     return {
         id: json.id ?? IdGenerator.next('item'),
         description: String(json.description ?? ''),
-        dateEntered: DateUtil.clean(json.dateEntered) ?? DateUtil.today()
+        dateEntered: DateUtil.clean(json.dateEntered) ?? DateUtil.today(),
+        priority: cleanPriority(json.priority),
+        targetDate: DateUtil.clean(json.targetDate),
+        completed: json.completed === true
     };
 }
