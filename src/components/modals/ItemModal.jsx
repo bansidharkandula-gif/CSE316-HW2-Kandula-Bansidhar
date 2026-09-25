@@ -36,6 +36,7 @@ import { useRef, useState } from 'react';
 import { ModalNames, useModals } from '../../context/ModalContext.jsx';
 import { useListEditor } from '../../hooks/useListEditor.js';
 import { DateUtil } from '../../common/DateUtil.js';
+import { DEFAULT_PRIORITY, PRIORITY_ORDER } from '../../model/listItem.js';
 import Modal, { ModalButton, ModalFooter, ModalHeading } from './Modal.jsx';
 
 export default function ItemModal() {
@@ -48,7 +49,10 @@ export default function ItemModal() {
     // field in a single update
     const [values, setValues] = useState(() => ({
         description: itemModal.values.description ?? '',
-        dateEntered: itemModal.values.dateEntered ?? DateUtil.today()
+        dateEntered: itemModal.values.dateEntered ?? DateUtil.today(),
+        priority: itemModal.values.priority ?? DEFAULT_PRIORITY,
+        targetDate: itemModal.values.targetDate ?? '',
+        completed: itemModal.values.completed ?? false 
     }));
 
     function setField(field, value) {
@@ -67,7 +71,8 @@ export default function ItemModal() {
             values: {
                 ...values,
                 description: values.description.trim(),
-                dateEntered: values.dateEntered || DateUtil.today()
+                dateEntered: values.dateEntered || DateUtil.today(),
+                targetDate: DateUtil.clean(values.targetDate)
             },
             then
         });
@@ -84,6 +89,7 @@ export default function ItemModal() {
     }
 
     // Next is meaningless on the last item
+    const canGoPrevious = itemModal.index > 0;
     const canGoNext = itemModal.index < itemModal.itemCount - 1;
 
     return (
@@ -130,11 +136,55 @@ export default function ItemModal() {
                             onChange={(event) => setField('dateEntered', event.target.value)}
                             className={`${CONTROL} min-w-36`} />
                     </div>
+                    <div className={FIELD}>
+                        <label className={FIELD_LABEL} htmlFor="item-priority-select">Priority</label>
+                        <select
+                            id="item-priority-select"
+                            value={values.priority}
+                            onChange={(event) => setField('priority', event.target.value)}
+                            className={CONTROL}>
+                            {PRIORITY_ORDER.map((priority) => (
+                                <option key={priority} value={priority}>{priority}</option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
+                <fieldset className="m-0 flex min-w-0 flex-col gap-[0.3125rem] border-none p-0">
+                    <legend className={`${FIELD_LABEL} mb-[0.3125rem] p-0`}>Target Date</legend>
+                    <div className={FIELD_ROW}>
+                        <div className={FIELD}>
+                            <input
+                                id="item-target-date-input"
+                                type="date"
+                                aria-label="The date this item is meant to be finished by"
+                                value={values.targetDate}
+                                onChange={(event) => setField('targetDate', event.target.value)}
+                                className={`${CONTROL} min-w-36`} />
+                        </div>
+                        <div className="flex flex-1 items-center gap-2 py-2">
+                            <input
+                                id="item-completed-checkbox"
+                                type="checkbox"
+                                checked={values.completed}
+                                onChange={(event) => setField('completed', event.target.checked)}
+                                className="h-[1.125rem] w-[1.125rem] cursor-pointer accent-sbu-red" />
+                            <label htmlFor="item-completed-checkbox"
+                                   className="cursor-pointer text-base text-grey-900">
+                                Completed
+                            </label>
+                        </div>
+                    </div>
+                </fieldset>
             </form>
 
             <ModalFooter>
                 <div className="flex gap-2">
+                    <ModalButton id="item-previous-button" variant="quiet"
+                                 disabled={!canGoPrevious}
+                                 title="Save and move to the previous item"
+                                 onClick={() => commit('previous')}>
+                        ◀&nbsp;Previous
+                    </ModalButton>
                     <ModalButton id="item-next-button" variant="quiet"
                                  disabled={!canGoNext}
                                  title="Save and move to the next item"

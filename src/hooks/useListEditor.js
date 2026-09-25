@@ -53,6 +53,8 @@ export function useListEditor() {
 
         if (then === 'next') {
             requestEditItem(index + 1);
+        } else if (then === 'previous') {
+            requestEditItem(index - 1);
         } else {
             closeItemModal();
         }
