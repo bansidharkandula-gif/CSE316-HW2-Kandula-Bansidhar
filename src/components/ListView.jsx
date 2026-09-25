@@ -27,9 +27,10 @@ import { useEffect, useRef, useState } from 'react';
 import { useListEditor } from '../hooks/useListEditor.js';
 import { useUndoRedoShortcuts } from '../hooks/useUndoRedoShortcuts.js';
 import { useLists } from '../context/ListsContext.jsx';
+import ItemCard from './ItemCard.jsx';
 
 export default function ListView() {
-    const { list, canUndo, canRedo, undo, redo, closeList, moveItem, renameList } = useListEditor();
+    const { list, canUndo, canRedo, undo, redo, closeList, moveItem, renameList, requestEditItem, duplicateItem } = useListEditor();
 
     const { listNeedingNameFocus, clearNameFocusRequest } = useLists();
 
@@ -282,37 +283,50 @@ export default function ListView() {
                    second and every fixed width column is drawn half a pace to
                    the right of the values underneath it.
                 */}
-                <div className="item-column-headers item-grid gap-3 border-l-[0.3125rem]
-                                border-l-transparent pr-[1.375rem] pb-2 pl-[1rem]
-                                text-[0.6875rem] font-bold tracking-[0.09em] uppercase
-                                text-grey-500 max-[46rem]:hidden"
-                     aria-hidden="true">
-                    <span className="area-handle" />
-                    <span className="area-description">Task</span>
-                    <span className="area-entered text-center">Date Entered</span>
-                    <span className="area-priority text-center">Priority</span>
-                    <span className="area-target text-center">Target Date</span>
-                    <span className="area-completed text-center">Completed</span>
-                    <span className="area-actions" />
-                </div>
+                {list.items.length === 0 ? (
+                    <p id="list-empty-message"
+                       className="m-auto pb-16 text-center text-[1.0625rem] text-grey-500">
+                        This list is empty.
+                    </p>
+                ) : (
+                    <>
+                        <div className="item-column-headers item-grid gap-3 border-l-[0.3125rem]
+                                        border-l-transparent pr-[1.375rem] pb-2 pl-[1rem]
+                                        text-[0.6875rem] font-bold tracking-[0.09em] uppercase
+                                        text-grey-500 max-[46rem]:hidden"
+                             aria-hidden="true">
+                            <span className="area-handle" />
+                            <span className="area-description">Task</span>
+                            <span className="area-entered text-center">Date Entered</span>
+                            <span className="area-priority text-center">Priority</span>
+                            <span className="area-target text-center">Target Date</span>
+                            <span className="area-completed text-center">Completed</span>
+                            <span className="area-actions" />
+                        </div>
 
-                <ol
-                    id="item-card-container"
-                    ref={containerRef}
-                    aria-label="The items in this list"
-                    onDragOver={handleDragOver}
-                    onDrop={handleDrop}
-                    className="card-container card-scroll m-0 min-h-0 flex-1 list-none
-                               overflow-x-hidden overflow-y-auto pt-0.5 pr-2 pb-22 pl-0.5">
-                    <li className={HARD_CODED_ROW}>
-                        <span className={HARD_CODED_DESCRIPTION}>Hard Coded Task 1 Description</span>
-                        <span className={HARD_CODED_DATE}>01/01/1970</span>
-                    </li>
-                    <li className={HARD_CODED_ROW}>
-                        <span className={HARD_CODED_DESCRIPTION}>Hard Coded Task 2 Description</span>
-                        <span className={HARD_CODED_DATE}>01/01/1970</span>
-                    </li>
-                </ol>
+                        <ol
+                            id="item-card-container"
+                            ref={containerRef}
+                            aria-label="The items in this list"
+                            onDragOver={handleDragOver}
+                            onDrop={handleDrop}
+                            className="card-container card-scroll m-0 min-h-0 flex-1 list-none
+                                       overflow-x-hidden overflow-y-auto pt-0.5 pr-2 pb-22 pl-0.5">
+                            {list.items.map((item, index) => (
+                                <ItemCard
+                                    key={item.id}
+                                    item={item}
+                                    index={index}
+                                    dropEdge={dropIndicator.index === index ? dropIndicator.edge : null}
+                                    isBeingDragged={dragFromIndex === index}
+                                    onOpen={() => requestEditItem(index)}
+                                    onDuplicate={() => duplicateItem(index)}
+                                    onDragStart={handleDragStart}
+                                    onDragEnd={endDrag} />
+                            ))}
+                        </ol>
+                    </>
+                )}
             </div>
         </section>
     );
