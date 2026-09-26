@@ -27,10 +27,11 @@ import { useEffect, useRef, useState } from 'react';
 import { useListEditor } from '../hooks/useListEditor.js';
 import { useUndoRedoShortcuts } from '../hooks/useUndoRedoShortcuts.js';
 import { useLists } from '../context/ListsContext.jsx';
+import Fab from './Fab.jsx';  
 import ItemCard from './ItemCard.jsx';
 
 export default function ListView() {
-    const { list, canUndo, canRedo, undo, redo, closeList, moveItem, renameList, requestEditItem, duplicateItem, requestDeleteItem } = useListEditor();
+    const { list, canUndo, canRedo, undo, redo, closeList, moveItem, renameList, requestAddItem, requestEditItem, duplicateItem, requestDeleteItem } = useListEditor();
 
     const { listNeedingNameFocus, clearNameFocusRequest } = useLists();
 
@@ -328,6 +329,7 @@ export default function ListView() {
                         </ol>
                     </>
                 )}
+                <Fab id="add-item-button" label="Add a new item" onClick={requestAddItem} />
             </div>
         </section>
     );

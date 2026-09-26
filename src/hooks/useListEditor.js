@@ -8,14 +8,16 @@
 import { useCurrentList } from '../context/CurrentListContext.jsx';
 import { useLists } from '../context/ListsContext.jsx';
 import { useModals } from '../context/ModalContext.jsx';
-import { cloneItem, itemValues, valuesAreEqual } from '../model/listItem.js';
+import { cloneItem, createListItem, itemValues, valuesAreEqual } from '../model/listItem.js';
 import { normalizeListName } from '../model/wolfieList.js';
+import { AddItem_Transaction } from '../transactions/AddItem_Transaction.js';
 import { DeleteItem_Transaction } from '../transactions/DeleteItem_Transaction.js';
 import { DuplicateItem_Transaction } from '../transactions/DuplicateItem_Transaction.js';
 import { EditItem_Transaction } from '../transactions/EditItem_Transaction.js';
 
 /** what the item modal is currently being used for */
 export const ItemModalModes = {
+    CREATE: 'create',
     EDIT: 'edit'
 };
 
@@ -33,6 +35,15 @@ export function useListEditor() {
         });
     }
 
+    function requestAddItem() {
+        openItemModal({
+            mode: ItemModalModes.CREATE,
+            index: -1,
+            itemCount: list.items.length,
+            values: itemValues(createListItem())
+        });
+    }
+
     /**
      * OK or Next in the item modal. Records the edit, or does nothing if
      * nothing changed.
@@ -40,12 +51,19 @@ export function useListEditor() {
      * @param {Object} request { mode, index, values, then } where then is
      * 'close' or 'next'
      */
-    function commitItemModal({ index, values, then = 'close' }) {
+    function commitItemModal({ mode = ItemModalModes.EDIT, index, values, then = 'close' }) {
         // the alert opens on top of the item modal, so what was typed is kept
         if (values.description === '') {
             inform({ title: 'A Description Is Required', message: 'Every item needs a description.' });
             return;
         }
+
+        if (mode === ItemModalModes.CREATE) {
+            const item = createListItem(values);
+            addTransaction(new AddItem_Transaction(operations, list.items.length, item));
+            closeItemModal();
+            return;
+        }     
 
         const oldValues = itemValues(list.items[index]);
         if (!valuesAreEqual(oldValues, values)) {
@@ -95,6 +113,7 @@ export function useListEditor() {
         undo,
         redo,
         closeList,
+        requestAddItem,
         requestEditItem,
         commitItemModal,
         duplicateItem,

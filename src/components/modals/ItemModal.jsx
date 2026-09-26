@@ -34,7 +34,7 @@
  */
 import { useRef, useState } from 'react';
 import { ModalNames, useModals } from '../../context/ModalContext.jsx';
-import { useListEditor } from '../../hooks/useListEditor.js';
+import { ItemModalModes, useListEditor } from '../../hooks/useListEditor.js';
 import { DateUtil } from '../../common/DateUtil.js';
 import { DEFAULT_PRIORITY, PRIORITY_ORDER } from '../../model/listItem.js';
 import Modal, { ModalButton, ModalFooter, ModalHeading } from './Modal.jsx';
@@ -89,8 +89,9 @@ export default function ItemModal() {
     }
 
     // Next is meaningless on the last item
-    const canGoPrevious = itemModal.index > 0;
-    const canGoNext = itemModal.index < itemModal.itemCount - 1;
+    const isCreating = itemModal.mode === ItemModalModes.CREATE;
+    const canGoPrevious = !isCreating && itemModal.index > 0;
+    const canGoNext = !isCreating && itemModal.index < itemModal.itemCount - 1;
 
     return (
         <Modal
@@ -105,7 +106,7 @@ export default function ItemModal() {
             initialFocusRef={descriptionRef}>
 
             <ModalHeading id="item-modal-heading">
-                {`Item ${itemModal.index + 1} of ${itemModal.itemCount}`}
+                {isCreating ? 'New Item' : `Item ${itemModal.index + 1} of ${itemModal.itemCount}`}
             </ModalHeading>
 
             <form id="item-modal-form" autoComplete="off"
@@ -199,7 +200,7 @@ export default function ItemModal() {
                     </ModalButton>
                     <ModalButton id="item-ok-button" variant="primary"
                                  onClick={() => commit('close')}>
-                        OK
+                        {isCreating ? 'Add' : 'OK'}
                     </ModalButton>
                 </div>
             </ModalFooter>
