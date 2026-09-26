@@ -10,6 +10,7 @@ import { useLists } from '../context/ListsContext.jsx';
 import { useModals } from '../context/ModalContext.jsx';
 import { cloneItem, itemValues, valuesAreEqual } from '../model/listItem.js';
 import { normalizeListName } from '../model/wolfieList.js';
+import { DeleteItem_Transaction } from '../transactions/DeleteItem_Transaction.js';
 import { DuplicateItem_Transaction } from '../transactions/DuplicateItem_Transaction.js';
 import { EditItem_Transaction } from '../transactions/EditItem_Transaction.js';
 
@@ -21,7 +22,7 @@ export const ItemModalModes = {
 export function useListEditor() {
     const { list, operations, addTransaction, undo, redo, canUndo, canRedo } = useCurrentList();
     const { closeList } = useLists();
-    const { openItemModal, closeItemModal, inform } = useModals();
+    const { openItemModal, closeItemModal, inform, askConfirm } = useModals();
 
     function requestEditItem(index) {
         openItemModal({
@@ -65,6 +66,16 @@ export function useListEditor() {
         addTransaction(new DuplicateItem_Transaction(operations, index, cloneItem(list.items[index])));
     }
 
+    function requestDeleteItem(index) {
+        const item = list.items[index];
+        askConfirm({
+            title: 'Delete This Item?',
+            message: `The item "${item.description}" will be removed from this list. You can undo this.`,
+            acceptLabel: 'Delete Item',
+            onAccept: () => addTransaction(new DeleteItem_Transaction(operations, index, item))
+        });
+    }
+
     function moveItem(fromIndex, toIndex) {
         if (fromIndex === toIndex) return;
         operations.moveItem(fromIndex, toIndex);
@@ -87,6 +98,7 @@ export function useListEditor() {
         requestEditItem,
         commitItemModal,
         duplicateItem,
+        requestDeleteItem,
         moveItem,
         renameList
     };

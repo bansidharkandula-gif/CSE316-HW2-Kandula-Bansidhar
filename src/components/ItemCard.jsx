@@ -1,6 +1,7 @@
 import { DateUtil } from '../common/DateUtil.js';
 import { Priority } from '../model/listItem.js';
-import IconButton, { DUPLICATE_GLYPH } from './IconButton.jsx';
+import IconButton, { DELETE_GLYPH, DUPLICATE_GLYPH } from './IconButton.jsx';
+
 
 const PRIORITY_STYLES = {
     [Priority.HIGH]: { accent: 'border-l-priority-high', text: 'text-priority-high' },
@@ -15,6 +16,7 @@ export default function ItemCard({
     isBeingDragged = false,
     onOpen,
     onDuplicate,
+    onDelete,
     onDragStart,
     onDragEnd
 }) {
@@ -89,6 +91,12 @@ export default function ItemCard({
                     label={`Duplicate the item ${item.description}`}
                     glyph={DUPLICATE_GLYPH}
                     onClick={onDuplicate} />
+                <IconButton
+                    action="delete-item"
+                    label={`Delete the item ${item.description}`}
+                    glyph={DELETE_GLYPH}
+                    danger
+                    onClick={onDelete} />
             </div>
         </li>
     );
