@@ -16,7 +16,7 @@ import Fab from './Fab.jsx';
 import ListCard from './ListCard.jsx';
 
 export default function HomeView() {
-    const { lists, openList, createList, deleteList } = useLists();
+    const { lists, openList, createList, duplicateList, deleteList } = useLists();
     const { askConfirm } = useModals();
 
     /**
@@ -91,6 +91,7 @@ export default function HomeView() {
                                 list={list}
                                 index={index}
                                 onOpen={() => openList(list.id)}
+                                onDuplicate={() => duplicateList(list.id)}
                                 onDelete={() => handleDeleteList(list)} />
                         ))}
                     </ul>

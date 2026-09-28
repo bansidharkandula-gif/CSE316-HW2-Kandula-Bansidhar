@@ -8,7 +8,7 @@
  */
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { DataStorageManager } from '../data/DataStorageManager.js';
-import { buildUnusedName, createWolfieList, DEFAULT_LIST_NAME } from '../model/wolfieList.js';
+import { buildUnusedName, createWolfieList, cloneList, DEFAULT_LIST_NAME } from '../model/wolfieList.js';
 import { useModals } from './ModalContext.jsx';
 
 const ListsContext = createContext(null);
@@ -99,6 +99,16 @@ export function ListsProvider({ children }) {
         return created;
     }
 
+    function duplicateList(listId) {
+        const index = lists.findIndex((list) => list.id === listId);
+        if (index < 0) return null;
+
+        const original = lists[index];
+        const copy = cloneList(original, buildUnusedName(lists, `${original.name} (Copy)`));
+        setLists(lists.toSpliced(index + 1, 0, copy));
+        return copy;
+    }
+
     function deleteList(listId) {
         setLists(lists.filter((list) => list.id !== listId));
         if (currentListId === listId) setCurrentListId(null);
@@ -123,6 +133,7 @@ export function ListsProvider({ children }) {
         openList: (listId) => setCurrentListId(listId),
         closeList: () => setCurrentListId(null),
         createList,
+        duplicateList,
         deleteList,
         updateList,
         clearNameFocusRequest: () => setListNeedingNameFocus(null)
